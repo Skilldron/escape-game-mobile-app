@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function Main() {
+export function Main({ navigation }) {
     
     const [date, setDate] = useState(new Date());
     const [rdv, setRdv] = useState([])
@@ -20,40 +20,7 @@ export default function Main() {
         if (missionsJson.data.length > 0) setRdv(missionsJson.data);
     }
 
-    async function launchGame(gameId) {
-
-        await fetch(`http://127.0.0.1:1337/api/rdvs/${gameId}`,{
-            method: "PUT",
-            body: JSON.stringify({
-                data: {
-                    partie_en_cours: "true"
-                }
-            }),
-          });
-
-
-    }
-
-    async function stopGame(gameId) {
-
-        console.log(JSON.stringify({
-            "data": {
-                "partie_en_cours": "true"
-            }
-        }));
-
-        fetch(`http://127.0.0.1:1337/api/rdvs/${gameId}`,{
-            method: "PUT",
-            body: JSON.stringify({
-                data: {
-                    partie_en_cours: "false"
-                }
-            }),
-          }).then(response => response.json()).then(data => console.log(data)).catch(error => console.log(error));
-
-        
-
-    }
+    
 
     return (
       <View style={styles.container}>
@@ -73,8 +40,7 @@ export default function Main() {
                 <Text style={styles.cardText}>{new Date(rdv.attributes.date_fin).toLocaleString()}</Text>
                 <Text style={styles.cardText}>La partie comprend {rdv.attributes.nombre_joueur} joueurs</Text>
                 <Text style={styles.cardText}>{rdv.attributes.partie_en_cours ? "Partie en cours" : "Partie non en cours" }</Text>
-                <Button disabled={rdv.attributes.partie_en_cours} title="Lancer la partie" onPress={launchGame} />
-                <Button title="Arreter la partie" onPress={()=> stopGame(rdv.id)} />
+                <Button title="Voir les détails" onPress={() => navigation.navigate('Details', { itemId: rdv.id })} />
             </View>
         ))}
 
